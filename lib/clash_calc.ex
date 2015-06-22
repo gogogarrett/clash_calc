@@ -12,7 +12,9 @@ defmodule ClashCalc do
 
     IO.puts "Total troops cost: #{troop_cost}"
     IO.puts "Total elixir collected: #{elixir_collected}"
-    troop_cost < elixir_collected
+    profit = troop_cost < elixir_collected
+    IO.puts "Profit: #{profit}"
+    profit
   end
 
   def cost_for(troop_type, number_of_troops, level_of_troop) do
