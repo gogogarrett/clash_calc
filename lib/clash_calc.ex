@@ -3,25 +3,50 @@ defmodule ClashCalc do
   # [
   #   %{ troop: "archer", level: 1, number: 10 },
   #   %{ troop: "barb", level: 2, number: 20 },
-  #   %{ troop: "giant", level: 5, number: 5 }
+  #   %{ troop: "giant", level: 5, number: 5 },
+  #   %{ spell: "healing", level: 2, number: 1}
   # ]
   def profit?(elixir_collected, troop_list) do
-    troop_cost = troop_list
-    |> Enum.map(fn (troop) -> cost_for(troop.troop, troop.number, troop.level) end)
-    |> Enum.sum
+    raid_cost = troop_list |> find_prices |> Enum.sum
 
-    IO.puts "Total troops cost: #{troop_cost}"
+    IO.puts "Total raid cost: #{raid_cost}"
     IO.puts "Total elixir collected: #{elixir_collected}"
-    profit = troop_cost < elixir_collected
+    profit = raid_cost < elixir_collected
     IO.puts "Profit: #{profit}"
     profit
   end
 
-  def cost_for(troop_type, number_of_troops, level_of_troop) do
-    number_of_troops * cost_for_troop(troop_type, level_of_troop)
+  def find_prices(list) do
+    Enum.map list, fn (troop) ->
+      cond do
+        Map.has_key?(troop, :troop) -> calc_total_cost(:elixir_troop, troop.troop, troop.number, troop.level)
+        Map.has_key?(troop, :spell) -> calc_total_cost(:spell, troop.spell, troop.number, troop.level)
+      end
+    end
   end
 
-  defp cost_for_troop(type, level) do
+  defp calc_total_cost(type, troop_type, number_of_troops, level_of_troop) do
+    number_of_troops * cost_for(type, troop_type, level_of_troop)
+  end
+
+  defp cost_for(:spell, type, level) do
+    case type do
+      "lightning" ->
+        lookup = %{"1": 15_000, "2": 16_500, "3": 18_000, "4": 20_000, "5": 22_000, "6": 24_000}
+      "healing" ->
+        lookup = %{"1": 15_000, "2": 16_500, "3": 18_000, "4": 20_000, "5": 22_000, "6": 24_000}
+      "rage" ->
+        lookup = %{"1": 23_000, "2": 25_000, "3": 27_000, "4": 30_000, "5": 33_000}
+      "jump" ->
+        lookup = %{"1": 23_000, "2": 27_000, "3": 31_000}
+      "freeze" ->
+        lookup = %{"1": 26_000, "2": 29_000, "3": 31_000, "4": 33_000, "5": 35_000}
+    end
+
+    Map.get(lookup, :"#{level}")
+  end
+
+  defp cost_for(:elixir_troop, type, level) do
     case type do
       "archer" ->
         lookup = %{"1": 50, "2": 80, "3": 120, "4": 160, "5": 200, "6": 300, "7": 400}
