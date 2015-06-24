@@ -26,6 +26,6 @@ Profit: true
 ```
 
 ## TODO:
-- [ ] Take into account spells
+- [x] Take into account spells
 - [ ] Take into dark elixir troops
 - [ ] Import from a file to generate a report of raids
